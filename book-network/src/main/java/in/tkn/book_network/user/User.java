@@ -2,10 +2,7 @@ package in.tkn.book_network.user;
 
 import in.tkn.book_network.role.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -28,6 +25,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name="_user")
 @EntityListeners(AuditingEntityListener.class)
+@Builder
 public class User implements UserDetails, Principal {
     @Id
     @GeneratedValue
