@@ -22,13 +22,13 @@ spring:
       mail:
         smtp:
           trust: "*"
-        auth: true
-        starttls:
-          enable: true
-        connectiontimeout: 5000
-        timeout: 3000
-        writetimeout: 5000
-
+          auth: true
+          starttls:
+            enable: false
+            required: false
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
 application:
   security:
     jwt:

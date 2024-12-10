@@ -59,6 +59,12 @@ public class AuthenticationService {
 
     private void sendValidationEmail(User user) throws MessagingException {
         var newToken = generateAndSaveActivationToken(user);
+        log.info(user.getEmail(),
+                user.getFullName(),
+                EmailTemplateName.ACTIVATE_ACCOUNT,
+                activationUrl,
+                newToken,
+                "Account activation");
         //sendEmail
         emailService.sendEmail(user.getEmail(),
                 user.getFullName(),
@@ -77,6 +83,7 @@ public class AuthenticationService {
                 .expiresAt(LocalDateTime.now().plusMinutes(15))
                 .user(user)
                 .build();
+        log.info(token.getToken(),"Generated Token");
         tokenRepository.save(token);
         return generateToken;
     }
@@ -109,10 +116,13 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
-
-    @Transactional
+//issue  : After Activation token has expired new created token was not going stored in database
+//Reason: it's because of generateAndSaveActivationToken method being called inside sendValidationEmail after throwing an exception (RuntimeException) for an expired token
+// @Transaction  and RuntimeException Once RuntimeException hits @Transaction rollback the transaction any database changes made during this method execution
+// sol 1:
+//    for now need to handle proper way for exception
+    @Transactional(noRollbackFor = RuntimeException.class)
     public void activateAccount(String token) throws MessagingException {
-//        todo exception has to be defined
         Token savedToken= tokenRepository.findByToken(token).orElseThrow(()->new RuntimeException("Invalid token"));
         if(LocalDateTime.now().isAfter(savedToken.getExpiresAt())){
             sendValidationEmail(savedToken.getUser());
@@ -122,6 +132,10 @@ public class AuthenticationService {
         user.setEnabled(true);
         userRepository.save(user);
         savedToken.setValidatedAt(LocalDateTime.now());
+        log.error(user.toString());
+        log.info(savedToken.getToken());
         tokenRepository.save(savedToken);
     }
+
+
 }
