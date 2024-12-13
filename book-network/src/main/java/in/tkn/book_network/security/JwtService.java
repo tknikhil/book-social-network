@@ -103,7 +103,7 @@ private String secretKey;
 //        byte [] keyBytes = Decoders.BASE64.decode(secretKey);
 //        return Keys.hmacShaKeyFor(keyBytes);
 //new approach
-        byte [] keyBytes = Base64.getDecoder().decode(secretKey.getBytes(StandardCharsets.UTF_8));
-        return new SecretKeySpec(keyBytes,"HmacSHA265");
+        byte [] keyBytes = Base64.getDecoder().decode(secretKey);
+        return new SecretKeySpec(keyBytes,"HmacSHA256");
     }
 }
