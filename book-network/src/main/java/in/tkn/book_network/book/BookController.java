@@ -1,5 +1,6 @@
 package in.tkn.book_network.book;
 
+import in.tkn.book_network.common.PageResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
