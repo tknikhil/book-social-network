@@ -1,6 +1,8 @@
 package in.tkn.book_network.book;
 
 import in.tkn.book_network.common.PageResponse;
+import in.tkn.book_network.histroy.BookTransactionHistory;
+import in.tkn.book_network.histroy.BookTransactionHistoryRepository;
 import in.tkn.book_network.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookService {
     private final BookRepository bookRepository;
+    private final BookTransactionHistoryRepository bookTransactionHistoryRepository;
     private final BookMapper bookMapper;
     public Integer save(BookRequest request, Authentication connectedUser) {
         User user =((User) connectedUser.getPrincipal());
@@ -66,6 +69,24 @@ public class BookService {
                 books.getTotalPages(),
                 books.isFirst(),
                 books.isLast()
+        );
+    }
+
+    public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser) {
+        User user =((User) connectedUser.getPrincipal());
+        Pageable pageable= PageRequest.of(page,size, Sort.by("createdDate").descending());
+        Page<BookTransactionHistory> allBorrowedBook= bookTransactionHistoryRepository.findAllBorrowedBooks(pageable,user.getId());
+        List<BorrowedBookResponse> bookResponse =allBorrowedBook.stream()
+                .map(bookMapper::toBorrowedBookResponse)
+                .toList();
+        return new PageResponse<>(
+                bookResponse,
+                allBorrowedBook.getNumber(),
+                allBorrowedBook.getSize(),
+                allBorrowedBook.getTotalElements(),
+                allBorrowedBook.getTotalPages(),
+                allBorrowedBook.isFirst(),
+                allBorrowedBook.isLast()
         );
     }
 }

@@ -1,5 +1,6 @@
 package in.tkn.book_network.book;
 
+import in.tkn.book_network.histroy.BookTransactionHistory;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +29,18 @@ public class BookMapper {
                 .owner(book.getOwner().getFullName())
 //                todo implement later
 //                .cover()
+                .build();
+    }
+
+    public BorrowedBookResponse toBorrowedBookResponse(BookTransactionHistory history) {
+
+        return BorrowedBookResponse.builder().id(history.getBook().getId())
+                .title(history.getBook().getTitle())
+                .authorName(history.getBook().getAuthorName())
+                .isbn(history.getBook().getIsbn())
+                .rate(history.getBook().getRate())
+                .returned(history.isReturned())
+                .returnedApproved(history.isReturnApproved())
                 .build();
     }
 }
