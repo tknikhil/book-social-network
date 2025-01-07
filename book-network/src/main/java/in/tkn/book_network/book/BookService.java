@@ -1,5 +1,6 @@
 package in.tkn.book_network.book;
 
+import in.tkn.book_network.book.file.FileStorageService;
 import in.tkn.book_network.common.PageResponse;
 import in.tkn.book_network.exception.OperationNotPermittedException;
 import in.tkn.book_network.histroy.BookTransactionHistory;
@@ -24,6 +25,8 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookTransactionHistoryRepository bookTransactionHistoryRepository;
     private final BookMapper bookMapper;
+    private final FileStorageService fileStorageService;
+
     public Integer save(BookRequest request, Authentication connectedUser) {
         User user =((User) connectedUser.getPrincipal());
         Book book=bookMapper.toBook(request );
@@ -190,7 +193,13 @@ public class BookService {
         return bookTransactionHistoryRepository.save(bookTransactionHistory).getId();
     }
 
-    public void uploadBookCoverPicture(MultipartFile file, Authentication connectedUser, Integer bookId) {
 
+    public void uploadBookCoverPicture(MultipartFile file, Authentication connectedUser, Integer bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(()-> new EntityNotFoundException("No book found with ID :"+bookId));
+        User user =((User) connectedUser.getPrincipal());
+        var bookCover = fileStorageService.saveFile(file,user.getId());
+        book.setBookCover(bookCover);
+        bookRepository.save(book);
     }
 }
