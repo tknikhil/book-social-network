@@ -3,10 +3,7 @@ package in.tkn.book_network.feedback;
 import in.tkn.book_network.book.Book;
 import in.tkn.book_network.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
